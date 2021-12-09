@@ -75,5 +75,5 @@ dim_dist(embed_mat_x=mat1,embed_mat_y=mat2,dims_use=1:10,num_cells_sample=100,ra
 
 If we were actually using this function, we would want to do many
 subsamples of cells across conditions to get a sense for the true
-Bhattacharrya distance. This will be updated soon with a small use cause
+Bhattacharrya distance. This will be updated soon with a small use case
 from scRNAseq data.
