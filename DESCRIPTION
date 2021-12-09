@@ -8,9 +8,13 @@ Authors@R:
            email = "anthony.r.cillo@gmail.com",
            comment = c(ORCID = "0000-0002-3213-3129"))
 Description: distdimscr is used for measures the distance between cell populations in high dimensional space from single-cell RNAseq data. Often times, one wants to get a sense for what the differences are across subpopulations or conditions in a single-cell RNAseq experiment. This package uses high-dimensional distance measures to quantify differences across cell types and conditions. The use case included in the vignette measures how different immune cell subsets are in peripheral blood versus tonsil samples. Currently, we have only implemented the Bhattacharyya distance in PCA space, but other distance metrics derived from other high-dimensional spaces are also possible.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    stats
