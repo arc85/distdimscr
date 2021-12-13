@@ -47,7 +47,8 @@ dim_dist <-  function(embed_mat_x,embed_mat_y,dims_use=1:10,num_cells_sample=100
 
 		} else {
 
-			print("Only bhatt_dist is currently available.")
+			message <- "Only bhatt_dist is currently available."
+			fail(message)
 
 		}
 
@@ -77,7 +78,8 @@ dim_dist <-  function(embed_mat_x,embed_mat_y,dims_use=1:10,num_cells_sample=100
 
 		} else {
 
-			print("Only bhatt_dist is currently available.")
+			message <- "Only bhatt_dist is currently available."
+			fail(message)
 
 		}
 
