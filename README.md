@@ -16,8 +16,8 @@ principal component space).
 
 ## Installation
 
-distdimscr is currently only available on [GitHub](https://github.com/)
-and can be install with:
+distdimscr is available on [GitHub](https://github.com/) and can be
+install with:
 
 ``` r
 # install.packages("devtools")
@@ -26,54 +26,113 @@ devtools::install_github("arc85/distdimscr")
 
 ## Example use
 
-Here is a super basic example as a placeholder until I can cook up
-something better. This creates a few matrices and calculate the
-Bhattacharrya distance between subsets of cells in each embedding.
+Why are we interested in using the Bhattacharrya distance to measure
+differences in high-dimensional space? In high-dimensional space, the
+intuitive notion of Euclidean distance between points breaks down,
+necessiting a different metric to measure distances. The Bhattacharrya
+distance can overcome this problem by measuring the distance between two
+non-normal probability distributions in high-dimensional space. See
+\[Aggarwal et
+al\]\[<https://link.springer.com/chapter/10.1007/3-540-44503-X_27>\] for
+further reading.
 
-By analogy, let’s pretend that these are principal componets derived
-from scRNAseq data. Will include an example later…
+Here, we outline a basic use case for distdimscr. We have two sets of 3
+samples, with the first set derived from the peripheral blood of healthy
+donors and the second set derived from tonsil tissues from patients
+undergoing tonsillectomy. Let’s say we want to quantify the difference
+in transcriptional signatures between the same immune cells in
+peripheral blood and tonsils (e.g. how different are CD4+ T cells in
+peripheral blood versus tonsil). distdimistscr lets us readily quantify
+these similiatires and differences between populations in these
+different tissues as outline below.
+
+The Bhattacharrya distance approach has been implemented in several
+single-cell RNAseq papers, first by \[Azizi et al, Cell
+2018\]\[<https://pubmed.ncbi.nlm.nih.gov/29961579/>\] and also by
+\[Cillo et al, Immunity
+2020\]\[<https://pubmed.ncbi.nlm.nih.gov/31924475/>\].
 
 ``` r
+# Load distdimscr
 library(distdimscr)
+#> Loading required package: Seurat
+library(ggplot2)
 
-set.seed("0222")
-mat1 <- matrix(data=rnorm(100000,mean=1,sd=1),nrow=2000,ncol=50)
-mat2 <- matrix(data=rnorm(100000,mean=2,sd=1),nrow=2000,ncol=50)
-mat3 <- matrix(data=rnorm(100000,mean=4,sd=1),nrow=2000,ncol=50)
+# Check out UMAP of peripheral blood and tonsil with cell types identified
+# Have a look at data-raw for sample acquisition and pre-processing
 
-## Compare mat1 to mat2
-dim_dist(embed_mat_x=mat1,embed_mat_y=mat2,dims_use=1:10,num_cells_sample=100,random_sample=FALSE)
-#>          [,1]
-#> [1,] 1.859134
+overall.data <- cbind(overall.umap,overall.metadata)
 
-# Setting random_sample=TRUE let's you compute a background distance that is independent of the actual conditions.
-dim_dist(embed_mat_x=mat1,embed_mat_y=mat2,dims_use=1:10,num_cells_sample=100,random_sample=TRUE)
-#>           [,1]
-#> [1,] 0.2293587
-# Notice that it's much less than the result with random_sample=TRUE
-
-## Comparing mat1 vs mat3 - distance is larger compared with mat1 vs mat2
-dim_dist(embed_mat_x=mat1,embed_mat_y=mat3,dims_use=1:10,num_cells_sample=100,random_sample=FALSE)
-#>          [,1]
-#> [1,] 12.01026
-dim_dist(embed_mat_x=mat1,embed_mat_y=mat3,dims_use=1:10,num_cells_sample=100,random_sample=TRUE)
-#>           [,1]
-#> [1,] 0.1552183
-# Notice with random_sample=TRUE the result is similar to the initial result
-
-## Comparing mat2 vs mat3 - distance will be smaller than mat1 vs mat3
-dim_dist(embed_mat_x=mat2,embed_mat_y=mat3,dims_use=1:10,num_cells_sample=100,random_sample=FALSE)
-#>          [,1]
-#> [1,] 4.782157
-dim_dist(embed_mat_x=mat1,embed_mat_y=mat2,dims_use=1:10,num_cells_sample=100,random_sample=TRUE)
-#>           [,1]
-#> [1,] 0.2201744
-# Notice with random_sample=TRUE the result is similar once again
+ggplot(overall.data,aes(x=UMAP_1,y=UMAP_2,colour=cell_types)) +
+  geom_point() +
+  theme_bw() +
+  facet_wrap(~sample_type)
 ```
 
-## Future use
+<img src="man/figures/README-example-1.png" width="100%" />
 
-If we were actually using this function, we would want to do many
-subsamples of cells across conditions to get a sense for the true
-Bhattacharrya distance. This will be updated soon with a small use case
-from scRNAseq data.
+``` r
+# Check out cell numbers in each sample
+knitr::kable(table(overall.data$sample_type,overall.data$cell_types))
+```
+
+|        | B cells | CD14 monocytes | CD1C DCs | CD4 T cells | CD8 T cells | NK cells | pDCs | Plasmablasts | RBCs |
+|--------|--------:|---------------:|---------:|------------:|------------:|---------:|-----:|-------------:|-----:|
+| PBMC   |     279 |           1173 |       73 |        3049 |        1514 |      493 |   37 |            7 |   23 |
+| Tonsil |    4573 |              4 |       41 |        3725 |         267 |       57 |   31 |          176 |    2 |
+
+``` r
+# We should only compare cells that are present in both samples
+# We will keep B cells, CD4 cells, and CD8 cells
+b.cells.tonsil <- rownames(overall.data)[overall.data$cell_types=="B cells" & overall.data$sample_type=="Tonsil"]
+b.cells.pbmc <- rownames(overall.data)[overall.data$cell_types=="B cells" & overall.data$sample_type=="PBMC"]
+
+# We have pre-extracted the PCA embeddings from our pre-processed Seurat object
+# Let's subset to the cell types identified above
+tonsil.b.cells.pca <- overall.pca[b.cells.tonsil,]
+pbmc.b.cells.pca <- overall.pca[b.cells.pbmc,]
+
+# Compare tonsil B cells and PBMC B cells - subsample 100 times
+
+bhatt.dist <- bhatt.dist.rand <- vector("logical",length=100)
+set.seed("0222")
+
+for (i in 1:100) {
+
+  bhatt.dist[[i]] <- dim_dist(embed_mat_x=tonsil.b.cells.pca,embed_mat_y=pbmc.b.cells.pca,dims_use=1:10,num_cells_sample=100,distance_metric="bhatt_dist",random_sample=FALSE)
+
+  bhatt.dist.rand[[i]] <- dim_dist(embed_mat_x=tonsil.b.cells.pca,embed_mat_y=pbmc.b.cells.pca,dims_use=1:10,num_cells_sample=100,distance_metric="bhatt_dist",random_sample=TRUE)
+
+}
+
+# Combine the results and plot
+bhatt.dist <- data.frame(B.cells.distance=bhatt.dist,comparison="real")
+bhatt.dist.rand <- data.frame(B.cells.distance=bhatt.dist.rand,comparison="random")
+
+bhatt.res <- rbind(bhatt.dist,bhatt.dist.rand)
+
+ggplot(bhatt.res,aes(x=comparison,y=B.cells.distance)) +
+  geom_boxplot(outlier.shape=NA) +
+  geom_jitter(size=0.5) +
+  theme_bw() +
+  xlab("Comparison type") +
+  ylab("Bhattacharrya distance")
+```
+
+<img src="man/figures/README-example-2.png" width="100%" />
+
+## Recommendations for use
+
+When selecting principal components for inclusison, it is best to select
+those that explain a signifcant amount of the variance. Here, we
+selected 10 as a simple use case. Also the number of cells to subset per
+sample can be thought of as a hyperparameter. While not strictly
+necessary to subsample, it gives a sense of the underlying distributions
+that contribute to the high-dimensional differences in distance between
+the samples.
+
+## Future features
+
+In further iterations of this package, we could include additional
+functions for direct interaction with Seurat objects and easy ways to
+measure the distances between multiple cell types.
