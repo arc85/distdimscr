@@ -26,16 +26,16 @@ distdimscr is available on [GitHub](https://github.com/) and can be install with
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("arc85/distdimscr")
+# devtools::install_github("arc85/distdimscr")
 ```
 
 ## Example use
 
-Why are we interested in using the Bhattacharrya distance to measure differences in high-dimensional space? In high-dimensional space, the intuitive notion of Euclidean distance between points breaks down, necessiting a different metric to measure distances. The Bhattacharrya distance can overcome this problem by measuring the distance between two non-normal probability distributions in high-dimensional space. See [Aggarwal et al][https://link.springer.com/chapter/10.1007/3-540-44503-X_27] for further reading.
+Why are we interested in using the Bhattacharrya distance to measure differences in high-dimensional space? In high-dimensional space, the intuitive notion of Euclidean distance between points breaks down, necessiting a different metric to measure distances. The Bhattacharrya distance can overcome this problem by measuring the distance between two non-normal probability distributions in high-dimensional space. See [Aggarwal et al](https://link.springer.com/chapter/10.1007/3-540-44503-X_27) for further reading.
 
 Here, we outline a basic use case for distdimscr. We have two sets of 3 samples, with the first set derived from the peripheral blood of healthy donors and the second set derived from tonsil tissues from patients undergoing tonsillectomy. Let's say we want to quantify the difference in transcriptional signatures between the same immune cells in peripheral blood and tonsils (e.g. how different are CD4+ T cells in peripheral blood versus tonsil). distdimistscr lets us readily quantify these similiatires and differences between populations in these different tissues as outline below.
 
-The Bhattacharrya distance approach has been implemented in several single-cell RNAseq papers, first by [Azizi et al, Cell 2018][https://pubmed.ncbi.nlm.nih.gov/29961579/] and also by [Cillo et al, Immunity 2020][https://pubmed.ncbi.nlm.nih.gov/31924475/].
+The Bhattacharrya distance approach has been implemented in several single-cell RNAseq papers, first by [Azizi et al, Cell 2018](https://pubmed.ncbi.nlm.nih.gov/29961579/) and also by [Cillo et al, Immunity 2020](https://pubmed.ncbi.nlm.nih.gov/31924475/).
 
 ```{r example}
 # Load distdimscr

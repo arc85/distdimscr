@@ -21,7 +21,7 @@ install with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("arc85/distdimscr")
+# devtools::install_github("arc85/distdimscr")
 ```
 
 ## Example use
@@ -32,8 +32,8 @@ intuitive notion of Euclidean distance between points breaks down,
 necessiting a different metric to measure distances. The Bhattacharrya
 distance can overcome this problem by measuring the distance between two
 non-normal probability distributions in high-dimensional space. See
-\[Aggarwal et
-al\]\[<https://link.springer.com/chapter/10.1007/3-540-44503-X_27>\] for
+[Aggarwal et
+al](https://link.springer.com/chapter/10.1007/3-540-44503-X_27) for
 further reading.
 
 Here, we outline a basic use case for distdimscr. We have two sets of 3
@@ -47,10 +47,9 @@ these similiatires and differences between populations in these
 different tissues as outline below.
 
 The Bhattacharrya distance approach has been implemented in several
-single-cell RNAseq papers, first by \[Azizi et al, Cell
-2018\]\[<https://pubmed.ncbi.nlm.nih.gov/29961579/>\] and also by
-\[Cillo et al, Immunity
-2020\]\[<https://pubmed.ncbi.nlm.nih.gov/31924475/>\].
+single-cell RNAseq papers, first by [Azizi et al, Cell
+2018](https://pubmed.ncbi.nlm.nih.gov/29961579/) and also by [Cillo et
+al, Immunity 2020](https://pubmed.ncbi.nlm.nih.gov/31924475/).
 
 ``` r
 # Load distdimscr
