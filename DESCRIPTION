@@ -15,6 +15,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends:
     Seurat (>= 3.2.3),
+    ggplot2 (>= 3.3.2),
+    knitr (>= 1.26),
     R (>= 2.10)
 Suggests:
     testthat (>= 3.0.0),
