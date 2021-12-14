@@ -13,8 +13,13 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Suggests: 
-    testthat (>= 3.0.0)
+Depends:
+    Seurat (>= 3.2.3),
+    R (>= 2.10)
+Suggests:
+    testthat (>= 3.0.0),
+    GEOquery (>= 2.54.1),
+    Biobase (>= 2.46.0)
 Config/testthat/edition: 3
-Imports: 
+Imports:
     stats
